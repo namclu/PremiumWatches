@@ -1,4 +1,13 @@
 <resources>
+    <!-- WatchCatalogActivity -->
     <string name="app_name">PremiumWatches</string>
+
+    <!-- DetailEditorActivity -->
+    <string name="title_activity_detail_editor">DetailEditorActivity</string>
+
+    <!-- Actionbar options -->
     <string name="action_settings">Settings</string>
+    <string name="action_add_dummy_data">Add Dummy Data</string>
+    <string name="action_order_more">Order More</string>
+    <string name="action_delete_product">Delete Product</string>
 </resources>
