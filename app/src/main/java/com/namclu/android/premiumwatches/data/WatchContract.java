@@ -24,22 +24,22 @@ public final class WatchContract {
         // Unique ID for a watch, Type: INTEGER
         public static final String _ID = BaseColumns._ID;
 
-        // Name of the watch model, Type: STRING
+        // Name of the watch model, Type: TEXT
         public static final String COLUMN_WATCH_MODEL = "model";
-
-        // Quantity available, Type: INTEGER
-        public static final String COLUMN_WATCH_QUANTITY = "quantity";
 
         // Price of the watch, Type: INTEGER
         public static final String COLUMN_WATCH_PRICE = "price";
 
+        // Quantity available, Type: INTEGER
+        public static final String COLUMN_WATCH_QUANTITY = "quantity";
+
         // Image of the watch, Type: BLOB
         public static final String COLUMN_WATCH_IMAGE = "image";
 
-        // Supplier name, Type: STRING
+        // Supplier name, Type: TEXT
         public static final String COLUMN_SUPPLIER_NAME = "supplier";
 
-        // Supplier email, Type: STRING
+        // Supplier email, Type: TEXT
         public static final String COLUMN_SUPPLIER_EMAIL = "email";
     }
 }
