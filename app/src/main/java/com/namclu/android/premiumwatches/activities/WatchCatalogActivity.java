@@ -85,7 +85,7 @@ public class WatchCatalogActivity extends AppCompatActivity {
 
     /**
      * Temporary helper method to display information in the onscreen TextView about the state of
-     * the pets database.
+     * the watches database.
      */
     private void displayDatabaseInfo() {
         mDatabase = mDbHelper.getReadableDatabase();
@@ -94,9 +94,9 @@ public class WatchCatalogActivity extends AppCompatActivity {
 
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
-            // pets table in the database).
+            // watches table in the database).
             TextView displayView = (TextView) findViewById(R.id.text_watch_list);
-            displayView.setText("Number of rows in pets database table: " + cursor.getCount());
+            displayView.setText("Number of rows in watches database table: " + cursor.getCount());
         } finally {
             // Always close the cursor when you're done reading from it. This releases all its
             // resources and makes it invalid.

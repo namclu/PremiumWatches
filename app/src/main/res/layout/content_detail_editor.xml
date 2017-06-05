@@ -1,12 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.namclu.android.premiumwatches.activities.DetailEditorActivity"
     tools:showIn="@layout/activity_detail_editor">
 
-</android.support.constraint.ConstraintLayout>
+    <!-- Watch model -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@style/CategoryContainerStyle">
+
+        <TextView
+            android:id="@+id/text_editor_category_model"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".4"
+            android:text="Model"
+            android:textAppearance="?android:textAppearanceMedium"/>
+
+        <EditText
+            android:id="@+id/edit_editor_field_model"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".6"
+            android:inputType="textCapWords"
+            tools:text="X500"/>
+    </LinearLayout>
+
+    <!-- Watch price -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@style/CategoryContainerStyle">
+
+        <TextView
+            android:id="@+id/text_editor_category_price"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".4"
+            android:text="Price"
+            android:textAppearance="?android:textAppearanceMedium"/>
+
+        <EditText
+            android:id="@+id/edit_editor_field_price"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".6"
+            android:inputType="numberSigned"
+            tools:text="$1,000"/>
+    </LinearLayout>
+
+    <!-- Watch quantity -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@style/CategoryContainerStyle">
+
+        <TextView
+            android:id="@+id/text_editor_category_quantity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".4"
+            android:text="Quantity"
+            android:textAppearance="?android:textAppearanceMedium"/>
+
+        <EditText
+            android:id="@+id/edit_editor_field_quantity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".6"
+            android:inputType="numberSigned"
+            tools:text="5"/>
+    </LinearLayout>
+
+    <!-- Watch supplier name -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@style/CategoryContainerStyle">
+
+        <TextView
+            android:id="@+id/text_editor_category_supplier"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".4"
+            android:text="Supplier"
+            android:textAppearance="?android:textAppearanceMedium"/>
+
+        <EditText
+            android:id="@+id/edit_editor_field_supplier"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".6"
+            android:inputType="textCapWords"
+            tools:text="Rolex"/>
+    </LinearLayout>
+
+    <!-- Watch supplier email -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@style/CategoryContainerStyle">
+
+        <TextView
+            android:id="@+id/text_editor_category_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".4"
+            android:text="Email"
+            android:textAppearance="?android:textAppearanceMedium"/>
+
+        <EditText
+            android:id="@+id/edit_editor_field_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".6"
+            android:inputType="textEmailAddress"
+            tools:text="rolex@mail.com"/>
+    </LinearLayout>
+
+    <!-- Watch image -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_margin"
+        style="@style/CategoryContainerStyle">
+
+        <ImageView
+            android:id="@+id/image_editor_field_"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+
+</LinearLayout>

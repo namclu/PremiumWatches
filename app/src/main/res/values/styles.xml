@@ -17,4 +17,12 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <!-- DetailEditorActivity category style -->
+    <style name="CategoryContainerStyle">
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingLeft">@dimen/activity_margin</item>
+        <item name="android:paddingRight">@dimen/activity_margin</item>
+
+    </style>
+
 </resources>
