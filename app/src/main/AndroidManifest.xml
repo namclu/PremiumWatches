@@ -33,7 +33,7 @@
         <!-- Declare ContentProvider -->
         <provider
             android:authorities="com.namclu.android.premiumwatches"
-            android:name="data.WatchProvider"
+            android:name=".data.WatchProvider"
             android:exported="false" />
     </application>
 
