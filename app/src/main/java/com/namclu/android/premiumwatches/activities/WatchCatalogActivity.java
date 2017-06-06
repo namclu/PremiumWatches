@@ -90,7 +90,7 @@ public class WatchCatalogActivity extends AppCompatActivity {
     private void displayDatabaseInfo() {
         mDatabase = mDbHelper.getReadableDatabase();
 
-        Cursor cursor = mDatabase.rawQuery("SELECT * FROM " + WatchEntry.TABLE_NAME, null);
+        Cursor cursor = mDatabase.query(WatchEntry.TABLE_NAME, null, null, null, null, null, null);
 
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
