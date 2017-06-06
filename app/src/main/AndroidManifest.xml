@@ -29,6 +29,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.WatchCatalogActivity"/>
         </activity>
+
+        <!-- Declare ContentProvider -->
+        <provider
+            android:authorities="com.namclu.android.premiumwatches"
+            android:name="data.WatchProvider"
+            android:exported="false" />
     </application>
 
 </manifest>
