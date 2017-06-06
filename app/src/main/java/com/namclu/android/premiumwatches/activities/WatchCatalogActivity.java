@@ -19,7 +19,7 @@ import com.namclu.android.premiumwatches.data.WatchDbHelper;
 
 public class WatchCatalogActivity extends AppCompatActivity {
 
-    // Declare private variables
+    // Global variables
     private WatchDbHelper mDbHelper;
     private SQLiteDatabase mDatabase;
 

@@ -24,7 +24,7 @@ import com.namclu.android.premiumwatches.data.WatchDbHelper;
  */
 public class DetailEditorActivity extends AppCompatActivity {
 
-    // Declare variables
+    // Global variables
     private EditText mModelField;
     private EditText mPriceField;
     private EditText mQuantityField;

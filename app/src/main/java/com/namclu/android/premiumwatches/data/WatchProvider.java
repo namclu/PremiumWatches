@@ -2,7 +2,9 @@ package com.namclu.android.premiumwatches.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,14 +17,35 @@ import android.support.annotation.Nullable;
 
 public class WatchProvider extends ContentProvider {
 
+    // Global variables
+    private WatchDbHelper mDbHelper;
+    private SQLiteDatabase mDatabase;
+
+    private static final int WATCHES = 100;
+    private static final int WATCH_ID = 101;
+
+    // Create UriMatcher object. UriMatcher.NO_MATCH == -1
+    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
+    //All paths added to the UriMatcher have a corresponding code to return
+    // when a match is found
+    static{
+        // This URI is used to access to multiple rows of the watches table
+        sUriMatcher.addURI(WatchContract.CONTENT_AUTHORITY, WatchContract.PATH_WATCHES, WATCHES);
+
+        // This URI is used to access to a single row of the watches table
+        sUriMatcher.addURI(WatchContract.CONTENT_AUTHORITY, WatchContract.PATH_WATCHES + "/#`", WATCH_ID);
+    }
+
     /**
      * Initialize the provider and the database helper object.
      */
     @Override
     public boolean onCreate() {
-        // TODO: Create and initialize a PetDbHelper object to gain access to the pets database.
+        // Create and initialize a PetDbHelper object to gain access to the pets database.
         // Make sure the variable is a global variable, so it can be referenced from other
         // ContentProvider methods.
+        mDbHelper = new WatchDbHelper(getContext());
         return true;
     }
 
