@@ -1,6 +1,7 @@
 package com.namclu.android.premiumwatches.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -8,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
 
 /**
  * Created by namlu on 6/6/2017.
@@ -19,7 +22,6 @@ public class WatchProvider extends ContentProvider {
 
     // Global variables
     private WatchDbHelper mDbHelper;
-    private SQLiteDatabase mDatabase;
 
     private static final int WATCHES = 100;
     private static final int WATCH_ID = 101;
@@ -54,8 +56,30 @@ public class WatchProvider extends ContentProvider {
      */
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
-        return null;
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // The cursor to be returned
+        Cursor cursor;
+
+        // Find if the URI matcher can match the URI to a specific code
+        switch (sUriMatcher.match(uri)) {
+            case WATCHES:
+                cursor = database.query(WatchEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            case WATCH_ID:
+                selection = "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                cursor = database.query(WatchEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot query unknown URI " + uri);
+        }
+
+        return cursor;
     }
 
     /**

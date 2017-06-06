@@ -91,9 +91,21 @@ public class WatchCatalogActivity extends AppCompatActivity {
      * the watches database.
      */
     private void displayDatabaseInfo() {
-        mDatabase = mDbHelper.getReadableDatabase();
 
-        Cursor cursor = mDatabase.query(WatchEntry.TABLE_NAME, null, null, null, null, null, null);
+        String[] projection = {
+                WatchEntry.COLUMN_WATCH_MODEL,
+                WatchEntry.COLUMN_WATCH_PRICE,
+                WatchEntry.COLUMN_WATCH_QUANTITY,
+                WatchEntry.COLUMN_SUPPLIER_NAME,
+                WatchEntry.COLUMN_SUPPLIER_EMAIL
+        };
+
+        Cursor cursor = getContentResolver().query(
+                WatchEntry.CONTENT_URI, // Content URI of the watches table
+                null,                   // Columns to return from each row
+                null,                   // Selection
+                null,                   // Selection args
+                null);                  // Sort order
 
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
