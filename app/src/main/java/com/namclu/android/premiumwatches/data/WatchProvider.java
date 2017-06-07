@@ -91,7 +91,16 @@ public class WatchProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return null;
+        int match = sUriMatcher.match(uri);
+
+        switch (match) {
+            case WATCHES:
+                return WatchEntry.CONTENT_LIST_TYPE;
+            case WATCH_ID:
+                return  WatchEntry.CONTENT_ITEM_TYPE;
+            default:
+                throw new IllegalStateException("Unknow URI " + uri + " with match " + match);
+        }
     }
 
     /**
