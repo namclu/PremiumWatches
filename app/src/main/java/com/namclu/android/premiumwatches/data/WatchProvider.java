@@ -159,8 +159,22 @@ public class WatchProvider extends ContentProvider {
      * Delete the data at the given selection and selection arguments.
      */
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+            // Delete all entries that match the selection and selection args
+            case WATCHES:
+                return database.delete(WatchEntry.TABLE_NAME, selection, selectionArgs);
+            // Delete a specific entry in the watches table
+            case WATCH_ID:
+                selection = "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                return database.delete(WatchEntry.TABLE_NAME, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Delete not supported for " + uri);
+        }
     }
 
     /**
@@ -170,7 +184,7 @@ public class WatchProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues,
                       @Nullable String selection, @Nullable String[] selectionArgs) {
         switch (sUriMatcher.match(uri)) {
-            // Update possibly multiple entries in the watches table
+            // Update all entries that match the selection and selection args
             case WATCHES:
                 return updateWatch(uri, contentValues, selection, selectionArgs);
             // Update a specific entry in the watches table
