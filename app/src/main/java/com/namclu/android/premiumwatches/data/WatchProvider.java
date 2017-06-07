@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
 
@@ -20,14 +21,16 @@ import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
 
 public class WatchProvider extends ContentProvider {
 
-    // Global variables
-    private WatchDbHelper mDbHelper;
-
+    // Static variables
+    private static final String TAG = WatchProvider.class.getSimpleName();
     private static final int WATCHES = 100;
     private static final int WATCH_ID = 101;
 
     // Create UriMatcher object. UriMatcher.NO_MATCH == -1
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
+    // Global variables
+    private WatchDbHelper mDbHelper;
 
     //All paths added to the UriMatcher have a corresponding code to return
     // when a match is found
@@ -97,7 +100,32 @@ public class WatchProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        return null;
+
+        switch (sUriMatcher.match(uri)) {
+            // Insert operation will always be implemented on the watches table as a whole
+            // not on a specific Watch
+            case WATCHES:
+                return insertWatch(uri, contentValues);
+            default:
+                throw new IllegalArgumentException("Insertion not supported for " + uri);
+        }
+    }
+
+    /**
+     * Helper method to insert new data into the provider with the given ContentValues.
+     */
+    private Uri insertWatch(Uri uri, ContentValues contentValues) {
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Row ID of the newly inserted row, or -1 if an error occurred
+        long rowId = database.insert(WatchEntry.TABLE_NAME, null, contentValues);
+
+        if (rowId == -1) {
+            Log.e(TAG, "Failed to insert row for " + uri);
+            return null;
+        }
+
+        return ContentUris.withAppendedId(WatchEntry.CONTENT_URI, rowId);
     }
 
     /**

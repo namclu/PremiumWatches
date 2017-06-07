@@ -3,7 +3,7 @@ package com.namclu.android.premiumwatches.activities;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.namclu.android.premiumwatches.R;
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
@@ -21,7 +22,6 @@ public class WatchCatalogActivity extends AppCompatActivity {
 
     // Global variables
     private WatchDbHelper mDbHelper;
-    private SQLiteDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +72,6 @@ public class WatchCatalogActivity extends AppCompatActivity {
 
     // Add a Watch to the db
     private void insertWatch() {
-        mDatabase = mDbHelper.getWritableDatabase();
-
         // Create ContentValues object for a single Watch
         ContentValues values = new ContentValues();
 
@@ -83,7 +81,17 @@ public class WatchCatalogActivity extends AppCompatActivity {
         values.put(WatchEntry.COLUMN_SUPPLIER_NAME, "Rolex");
         values.put(WatchEntry.COLUMN_SUPPLIER_EMAIL, "rolex@mail.com");
 
-        long newRowId = mDatabase.insert(WatchEntry.TABLE_NAME, null, values);
+        // Call ContentResolver insert() method
+        // Returns URI of the newly inserted row, or null if an error occurred
+        Uri uri = getContentResolver().insert(WatchEntry.CONTENT_URI, values);
+
+        if (uri == null) {
+            // If the new content URI is null, then there was an error with insertion.
+            Toast.makeText(this, R.string.toast_insert_watch_failed, Toast.LENGTH_SHORT).show();
+        } else {
+            // Else insertion was successful
+            Toast.makeText(this, R.string.toast_insert_watch_successful, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

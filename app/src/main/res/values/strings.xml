@@ -13,4 +13,8 @@
 
     <!-- DetailEditorActivity menu options-->
     <string name="action_save">Save</string>
+
+    <!-- Toast messages -->
+    <string name="toast_insert_watch_successful">Watch saved</string>
+    <string name="toast_insert_watch_failed">Error with saving watch</string>
 </resources>

@@ -2,6 +2,7 @@ package com.namclu.android.premiumwatches.activities;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -115,14 +116,16 @@ public class DetailEditorActivity extends AppCompatActivity {
             values.put(WatchEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
         }
 
-        // Insert Watch into db.
-        // Returns row ID of the newly inserted row, or -1 if an error occurred
-        long rowId = database.insert(WatchEntry.TABLE_NAME, null, values);
+        // Insert Watch into db
+        Uri uri = getContentResolver().insert(WatchEntry.CONTENT_URI, values);
 
-        if (rowId == -1) {
-            Toast.makeText(this, "Error saving item", Toast.LENGTH_SHORT).show();
+        // Returns URI of the newly inserted row, or null if an error occurred
+        if (uri == null) {
+            // If the new content URI is null, then there was an error with insertion.
+            Toast.makeText(this, R.string.toast_insert_watch_failed, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "New item added at row " + rowId, Toast.LENGTH_SHORT).show();
+            // Else insertion was successful
+            Toast.makeText(this, R.string.toast_insert_watch_successful, Toast.LENGTH_SHORT).show();
         }
     }
 }
