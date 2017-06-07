@@ -115,6 +115,33 @@ public class WatchProvider extends ContentProvider {
      * Helper method to insert new data into the provider with the given ContentValues.
      */
     private Uri insertWatch(Uri uri, ContentValues contentValues) {
+        /* Check values before inserting */
+        // Check if model == null
+        String watchModel = contentValues.getAsString(WatchEntry.COLUMN_WATCH_MODEL);
+        if (watchModel == null) {
+            throw new IllegalArgumentException("Watch model required");
+        }
+
+        // Check if price < 0
+        String watchPriceString = contentValues.getAsString(WatchEntry.COLUMN_WATCH_PRICE);
+        int watchPrice = Integer.parseInt(watchPriceString);
+        if (watchPrice < 0) {
+            throw new IllegalArgumentException("Price must be greater than 0");
+        }
+
+        // Check if quantity < 0
+        String watchQuantityString = contentValues.getAsString(WatchEntry.COLUMN_WATCH_QUANTITY);
+        int watchQuantity = Integer.parseInt(watchQuantityString);
+        if (watchQuantity < 0) {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
+        }
+
+        // Check if supplier name == null
+        String supplierName = contentValues.getAsString(WatchEntry.COLUMN_SUPPLIER_NAME);
+        if (supplierName == null) {
+            throw new IllegalArgumentException("Supplier name required");
+        }
+
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Row ID of the newly inserted row, or -1 if an error occurred
