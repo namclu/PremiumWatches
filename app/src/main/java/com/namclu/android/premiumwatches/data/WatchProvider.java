@@ -167,7 +167,67 @@ public class WatchProvider extends ContentProvider {
      * Updates the data at the given selection and selection arguments, with the new ContentValues.
      */
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues,
+                      @Nullable String selection, @Nullable String[] selectionArgs) {
+        switch (sUriMatcher.match(uri)) {
+            // Update possibly multiple entries in the watches table
+            case WATCHES:
+                return updateWatch(uri, contentValues, selection, selectionArgs);
+            // Update a specific entry in the watches table
+            case WATCH_ID:
+                selection = "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                return updateWatch(uri, contentValues, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Update not supported for " + uri);
+        }
+    }
+
+    public int updateWatch(@NonNull Uri uri, @Nullable ContentValues contentValues,
+                           @Nullable String selection, @Nullable String[] selectionArgs) {
+        /* Check values before updating */
+        // If contentValues is empty, return 0
+        if (contentValues.size() == 0) {
+            return 0;
+        }
+
+        // If watch model exists, check if model == null
+        if (contentValues.containsKey(WatchEntry.COLUMN_WATCH_MODEL)) {
+            String watchModel = contentValues.getAsString(WatchEntry.COLUMN_WATCH_MODEL);
+            if (watchModel == null) {
+                throw new IllegalArgumentException("Watch model required");
+            }
+        }
+
+        // If watch price exists, check if price < 0
+        if (contentValues.containsKey(WatchEntry.COLUMN_WATCH_PRICE)) {
+            String watchPriceString = contentValues.getAsString(WatchEntry.COLUMN_WATCH_PRICE);
+            int watchPrice = Integer.parseInt(watchPriceString);
+            if (watchPrice < 0) {
+                throw new IllegalArgumentException("Price must be greater than 0");
+            }
+        }
+
+        // If watch quantity exists, check if quantity < 0
+        if (contentValues.containsKey(WatchEntry.COLUMN_WATCH_QUANTITY)) {
+            String watchQuantityString = contentValues.getAsString(WatchEntry.COLUMN_WATCH_QUANTITY);
+            int watchQuantity = Integer.parseInt(watchQuantityString);
+            if (watchQuantity < 0) {
+                throw new IllegalArgumentException("Quantity must be greater than 0");
+            }
+        }
+
+        // If supplier name exists, check if name == null
+        if (contentValues.containsKey(WatchEntry.COLUMN_SUPPLIER_NAME)) {
+            String supplierName = contentValues.getAsString(WatchEntry.COLUMN_SUPPLIER_NAME);
+            if (supplierName == null) {
+                throw new IllegalArgumentException("Supplier name required");
+            }
+        }
+
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Returns the number of rows updated
+        return database.update(WatchEntry.TABLE_NAME, contentValues, selection, selectionArgs);
     }
 }
