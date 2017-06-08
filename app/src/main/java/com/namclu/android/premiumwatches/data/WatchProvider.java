@@ -82,6 +82,9 @@ public class WatchProvider extends ContentProvider {
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
 
+        // Set notification URI on the Cursor
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return cursor;
     }
 
@@ -161,6 +164,10 @@ public class WatchProvider extends ContentProvider {
             return null;
         }
 
+        // Notify all listeners that data has changed for content URI
+        // Passing null, by default will notify CursorAdapter object of changes
+        getContext().getContentResolver().notifyChange(uri, null);
+
         return ContentUris.withAppendedId(WatchEntry.CONTENT_URI, rowId);
     }
 
@@ -171,19 +178,29 @@ public class WatchProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        int rowsDeleted;
 
         switch (sUriMatcher.match(uri)) {
             // Delete all entries that match the selection and selection args
             case WATCHES:
-                return database.delete(WatchEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = database.delete(WatchEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             // Delete a specific entry in the watches table
             case WATCH_ID:
                 selection = "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-                return database.delete(WatchEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = database.delete(WatchEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Delete not supported for " + uri);
         }
+
+        if (rowsDeleted != 0) {
+            // Notify all listeners that data has changed for content URI
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsDeleted;
     }
 
     /**
@@ -248,9 +265,16 @@ public class WatchProvider extends ContentProvider {
             }
         }
 
+        // Get db reference, then update db and get number of rows affected
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        int rowsUpdated = database.update(WatchEntry.TABLE_NAME, contentValues, selection, selectionArgs);
 
-        // Returns the number of rows updated
-        return database.update(WatchEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+        if (rowsUpdated != 0) {
+            // Notify all listeners that data has changed for content URI
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        // Return the number of rows updated
+        return rowsUpdated;
     }
 }
