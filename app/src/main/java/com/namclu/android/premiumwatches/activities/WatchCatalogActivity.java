@@ -1,7 +1,10 @@
 package com.namclu.android.premiumwatches.activities;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,7 +22,11 @@ import com.namclu.android.premiumwatches.adapters.WatchCursorAdapter;
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
 import com.namclu.android.premiumwatches.data.WatchDbHelper;
 
-public class WatchCatalogActivity extends AppCompatActivity {
+public class WatchCatalogActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
+
+    // Unique URI loader ID
+    private static final int URI_LOADER = 0;
 
     // Global variables
     private WatchDbHelper mDbHelper;
@@ -44,15 +51,23 @@ public class WatchCatalogActivity extends AppCompatActivity {
         // Initialise variables
         mDbHelper = new WatchDbHelper(this);
 
-        // Find the ListView which will be populated with data
+        // Find the Views which will be populated with data
         ListView listView = (ListView) findViewById(R.id.list_catalog_watch_item);
-
-        // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyListView = findViewById(R.id.view_catalog_empty_view);
+
+        // Set empty view on the ListView, so that it only shows when the list has 0 items.
         listView.setEmptyView(emptyListView);
 
-        // Display db
-        displayDatabaseInfo();
+        /* LoaderManager.LoaderCallbacks stuff */
+        // Prepare the loader.  Either re-connect with an existing one, or start a new one.
+        getLoaderManager().initLoader(URI_LOADER, null, this);
+
+        // Initialise CursorAdapter
+        // Pass null for the cursor, then update it in onLoadFinished()
+        mCursorAdapter = new WatchCursorAdapter(this, null, 0);
+
+        // Set CursorAdapter to ListView
+        listView.setAdapter(mCursorAdapter);
     }
 
     @Override
@@ -70,13 +85,42 @@ public class WatchCatalogActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add_dummy_data:
                 insertWatch();
-                displayDatabaseInfo();
                 return true;
             case R.id.action_settings:
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /*
+    * Override methods for LoaderManger.LoaderCallbacks<Cursor>
+    * */
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+        String[] projection = {
+                WatchEntry._ID,
+                WatchEntry.COLUMN_WATCH_MODEL,
+                WatchEntry.COLUMN_WATCH_PRICE,
+                WatchEntry.COLUMN_WATCH_QUANTITY
+        };
+
+        return new CursorLoader(this, WatchEntry.CONTENT_URI, projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // Swap the new cursor in.  (The framework will take care of closing the
+        // old cursor once we return.)
+        mCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // This is called when the last Cursor provided to onLoadFinished()
+        // above is about to be closed.  We need to make sure we are no
+        // longer using it.
+        mCursorAdapter.swapCursor(null);
     }
 
     // Add a Watch to the db
@@ -101,34 +145,5 @@ public class WatchCatalogActivity extends AppCompatActivity {
             // Else insertion was successful
             Toast.makeText(this, R.string.toast_insert_watch_successful, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    /**
-     * Temporary helper method to display information in the onscreen TextView about the state of
-     * the watches database.
-     */
-    private void displayDatabaseInfo() {
-
-        String[] projection = {
-                WatchEntry.COLUMN_WATCH_MODEL,
-                WatchEntry.COLUMN_WATCH_PRICE,
-                WatchEntry.COLUMN_WATCH_QUANTITY,
-                WatchEntry.COLUMN_SUPPLIER_NAME,
-                WatchEntry.COLUMN_SUPPLIER_EMAIL
-        };
-
-        Cursor cursor = getContentResolver().query(
-                WatchEntry.CONTENT_URI, // Content URI of the watches table
-                null,                   // Columns to return from each row
-                null,                   // Selection
-                null,                   // Selection args
-                null);                  // Sort order
-
-        // Find the ListView and  create a CursorAdapter
-        ListView listView = (ListView) findViewById(R.id.list_catalog_watch_item);
-        WatchCursorAdapter cursorAdapter = new WatchCursorAdapter(this, cursor, 0);
-
-        // Set CursorAdapter to ListView
-        listView.setAdapter(cursorAdapter);
     }
 }
