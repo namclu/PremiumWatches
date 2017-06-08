@@ -21,7 +21,6 @@
         </activity>
         <activity
             android:name=".activities.DetailEditorActivity"
-            android:label="@string/title_activity_detail_editor"
             android:parentActivityName=".activities.WatchCatalogActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <!-- Parent activity meta-data to support 4.0 and lower -->

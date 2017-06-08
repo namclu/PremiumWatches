@@ -40,6 +40,19 @@ public class DetailEditorActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Use getIntent() and getData() to get associated URI
+        Uri watchUri = getIntent().getData();
+
+        // Set title of activity depending on how user accessed from catalog activity
+        // If user clicks a ListView item, set title to "Edit Watch"
+        // else if user clicks "+", set title to "Add a Watch"
+        if (watchUri == null) {
+            // "Add a Watch"
+            setTitle("Add a Watch");
+        } else {
+            setTitle("Edit Watch");
+        }
+
         // Find views to read user input from
         mModelField = (EditText) findViewById(R.id.edit_editor_field_model);
         mPriceField = (EditText) findViewById(R.id.edit_editor_field_price);

@@ -102,7 +102,7 @@ public class WatchProvider extends ContentProvider {
             case WATCH_ID:
                 return  WatchEntry.CONTENT_ITEM_TYPE;
             default:
-                throw new IllegalStateException("Unknow URI " + uri + " with match " + match);
+                throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
         }
     }
 

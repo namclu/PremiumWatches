@@ -1,6 +1,7 @@
 package com.namclu.android.premiumwatches.activities;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -68,6 +70,20 @@ public class WatchCatalogActivity extends AppCompatActivity implements
 
         // Set CursorAdapter to ListView
         listView.setAdapter(mCursorAdapter);
+
+        // Setup item click listener
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent detailEditorIntent = new Intent(
+                        Intent.ACTION_VIEW,
+                        ContentUris.withAppendedId(WatchEntry.CONTENT_URI, id),
+                        WatchCatalogActivity.this,
+                        DetailEditorActivity.class);
+
+                startActivity(detailEditorIntent);
+            }
+        });
     }
 
     @Override
