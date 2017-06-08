@@ -12,6 +12,8 @@
 
     <!-- DetailEditorActivity -->
     <string name="title_activity_detail_editor">Detail Editor</string>
+    <string name="editor_title_add_watch">Add a Watch</string>
+    <string name="editor_title_edit_watch">Edit Watch</string>
 
     <!-- DetailEditorActivity menu options-->
     <string name="action_save">Save</string>
@@ -19,4 +21,7 @@
     <!-- Toast messages -->
     <string name="toast_insert_watch_successful">Watch saved</string>
     <string name="toast_insert_watch_failed">Error with saving watch</string>
+    <string name="toast_update_watch_successful">Watch updated</string>
+    <string name="toast_update_watch_failed">Error with updating watch</string>
+
 </resources>

@@ -24,7 +24,7 @@ import com.namclu.android.premiumwatches.adapters.WatchCursorAdapter;
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
 
 /**
- * Allows user to create a new watch or edit an existing one.
+ * Allows user to create a new Watch or edit an existing one.
  */
 public class DetailEditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -57,9 +57,9 @@ public class DetailEditorActivity extends AppCompatActivity implements
         // else if user clicks "+" FAB, set title to "Add a Watch"
         if (mWatchUri == null) {
             // "Add a Watch"
-            setTitle("Add a Watch");
+            setTitle(getString(R.string.editor_title_add_watch));
         } else {
-            setTitle("Edit Watch");
+            setTitle(getString(R.string.editor_title_edit_watch));
         }
 
         // Find views to read user input from
@@ -198,16 +198,31 @@ public class DetailEditorActivity extends AppCompatActivity implements
             values.put(WatchEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
         }
 
-        // Insert Watch into db
-        Uri uri = getContentResolver().insert(WatchEntry.CONTENT_URI, values);
+        if (mWatchUri == null) {
+            // If URI == null, saving a new Watch
+            // Insert Watch into db
+            Uri uri = getContentResolver().insert(WatchEntry.CONTENT_URI, values);
 
-        // Returns URI of the newly inserted row, or null if an error occurred
-        if (uri == null) {
-            // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(this, R.string.toast_insert_watch_failed, Toast.LENGTH_SHORT).show();
+            // Returns URI of the newly inserted row, or null if an error occurred
+            if (uri == null) {
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(this, R.string.toast_insert_watch_failed, Toast.LENGTH_SHORT).show();
+            } else {
+                // Else insertion was successful
+                Toast.makeText(this, R.string.toast_insert_watch_successful, Toast.LENGTH_SHORT).show();
+            }
         } else {
-            // Else insertion was successful
-            Toast.makeText(this, R.string.toast_insert_watch_successful, Toast.LENGTH_SHORT).show();
+            // Else updating an existing Watch
+            int rowUpdated = getContentResolver().update(mWatchUri, values, null, null);
+
+            if (rowUpdated == 0) {
+                // If not Watch update, then an error occurred
+                Toast.makeText(this, R.string.toast_update_watch_failed, Toast.LENGTH_SHORT).show();
+            } else {
+                // Else Watch update successful
+                Toast.makeText(this, R.string.toast_update_watch_successful, Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 }
