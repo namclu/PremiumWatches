@@ -4,12 +4,14 @@ import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -102,7 +104,8 @@ public class WatchCatalogActivity extends AppCompatActivity implements
             case R.id.action_add_dummy_data:
                 insertWatch();
                 return true;
-            case R.id.action_settings:
+            case R.id.action_delete_all:
+                showDeleteAllConfirmationDialog();
                 return true;
         }
 
@@ -142,7 +145,9 @@ public class WatchCatalogActivity extends AppCompatActivity implements
         mCursorAdapter.swapCursor(null);
     }
 
-    // Add a Watch to the db
+    /*
+     * Add a Watch to the db
+     * */
     private void insertWatch() {
         // Create ContentValues object for a single Watch
         ContentValues values = new ContentValues();
@@ -164,5 +169,45 @@ public class WatchCatalogActivity extends AppCompatActivity implements
             // Else insertion was successful
             Toast.makeText(this, R.string.toast_insert_watch_successful, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /*
+    * Delete all watches from db
+    * */
+    private void deleteAllWatches() {
+        int rowsDeleted = getContentResolver().delete(WatchEntry.CONTENT_URI, null, null);
+
+        if (rowsDeleted == 0) {
+            // Error with deletion
+            Toast.makeText(this, R.string.toast_delete_all_failed, Toast.LENGTH_SHORT).show();
+        } else {
+            // Deletion successful
+            Toast.makeText(this, R.string.toast_delete_all_successful, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /*
+    * If user clicks on "Delete All", dialog appears to allow user to "Delete All" or "Cancel"
+    * */
+    private void showDeleteAllConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.alert_delete_all_dialog).
+                setPositiveButton(R.string.alert_button_delete_all, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked the "Delete All" button
+                        deleteAllWatches();
+                    }
+                }).
+                setNegativeButton(R.string.alert_button_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogInterface, int id) {
+                        // User clicked the "Cancel" button, so dismiss the dialog
+                        // and continue editing
+                        if (dialogInterface != null) {
+                            dialogInterface.dismiss();
+                        }
+                    }
+                });
+        // Create and show the AlertDialog
+        builder.create().show();
     }
 }

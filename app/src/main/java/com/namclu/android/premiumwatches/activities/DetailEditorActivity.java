@@ -343,7 +343,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
     }
 
     /*
-    * If user clicks on "delete", dialog appears to allow user to "Delete" or "Cancel"
+    * If user clicks on "Delete", dialog appears to allow user to "Delete" or "Cancel"
     * */
     private void showDeleteConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

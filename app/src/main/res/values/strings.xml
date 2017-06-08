@@ -9,6 +9,7 @@
     <string name="action_add_dummy_data">Add Dummy Data</string>
     <string name="action_order_product">Order Product</string>
     <string name="action_delete_product">Delete Product</string>
+    <string name="action_delete_all">Delete All</string>
 
     <!-- DetailEditorActivity -->
     <string name="title_activity_detail_editor">Detail Editor</string>
@@ -27,6 +28,8 @@
     <string name="toast_update_watch_failed">Error with updating watch</string>
     <string name="toast_delete_watch_successful">Watch deleted</string>
     <string name="toast_delete_watch_failed">Error with deleting watch</string>
+    <string name="toast_delete_all_successful">All watches deleted</string>
+    <string name="toast_delete_all_failed">Error deleting watches</string>
     
     <!-- Strings for alert dialog -->
     <string name="alert_unsaved_changes_dialog">Discard changes and quit editing?</string>
@@ -34,7 +37,9 @@
     <string name="alert__button_keep_editing">Keep editing</string>
 
     <string name="alert_delete_dialog">Delete this watch?</string>
+    <string name="alert_delete_all_dialog">Delete all watches?</string>
     <string name="alert_button_delete">Delete</string>
+    <string name="alert_button_delete_all">Delete All</string>
     <string name="alert_button_cancel">Cancel</string>
 
 </resources>
