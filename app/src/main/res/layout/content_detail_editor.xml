@@ -12,10 +12,10 @@
 
     <!-- Watch model -->
     <LinearLayout
+        style="@style/CategoryContainerStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/CategoryContainerStyle">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/text_editor_category_model"
@@ -30,16 +30,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".6"
+            android:hint="@string/editor_field_hint_required"
             android:inputType="textCapWords"
             tools:text="X500"/>
     </LinearLayout>
 
     <!-- Watch price -->
     <LinearLayout
+        style="@style/CategoryContainerStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/CategoryContainerStyle">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/text_editor_category_price"
@@ -60,10 +61,10 @@
 
     <!-- Watch quantity -->
     <LinearLayout
+        style="@style/CategoryContainerStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/CategoryContainerStyle">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/text_editor_category_quantity"
@@ -84,10 +85,10 @@
 
     <!-- Supplier name -->
     <LinearLayout
+        style="@style/CategoryContainerStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/CategoryContainerStyle">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/text_editor_category_supplier"
@@ -102,16 +103,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".6"
+            android:hint="@string/editor_field_hint_required"
             android:inputType="textCapWords"
             tools:text="Rolex"/>
     </LinearLayout>
 
     <!-- Supplier email -->
     <LinearLayout
+        style="@style/CategoryContainerStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/CategoryContainerStyle">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/text_editor_category_email"
@@ -132,11 +134,11 @@
 
     <!-- Watch image -->
     <LinearLayout
+        style="@style/CategoryContainerStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/activity_margin"
-        style="@style/CategoryContainerStyle">
+        android:padding="@dimen/activity_margin">
 
         <ImageView
             android:id="@+id/image_editor_product_image"

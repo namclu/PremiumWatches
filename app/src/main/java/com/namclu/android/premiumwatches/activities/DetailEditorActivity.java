@@ -173,6 +173,10 @@ public class DetailEditorActivity extends AppCompatActivity implements
     * Get user input of Watch from detail editor and saves new Watch into database
     * */
     private void saveWatch() {
+        ContentValues values = new ContentValues();
+        int price = 0;
+        int quantity = 0;
+
         // Get String values from details editor field
         String watchModel = mModelField.getText().toString().trim();
         String watchPrice = mPriceField.getText().toString().trim();
@@ -180,30 +184,43 @@ public class DetailEditorActivity extends AppCompatActivity implements
         String supplierName = mSupplierField.getText().toString().trim();
         String supplierEmail = mEmailField.getText().toString().trim();
 
-        ContentValues values = new ContentValues();
+
+        // If all fields are empty, then exit activity w/o saving
+        if (TextUtils.isEmpty(watchModel) &&
+                TextUtils.isEmpty(watchPrice) && TextUtils.isEmpty(watchQuantity) &&
+                TextUtils.isEmpty(supplierName) && TextUtils.isEmpty(supplierEmail)) {
+            Toast.makeText(this, R.string.toast_insert_watch_not_saved, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (!TextUtils.isEmpty(watchModel)) {
             values.put(WatchEntry.COLUMN_WATCH_MODEL, watchModel);
         }
+
         if (!TextUtils.isEmpty(watchPrice)) {
-            values.put(WatchEntry.COLUMN_WATCH_PRICE, watchPrice);
+            price = Integer.parseInt(watchPrice);
         }
+        values.put(WatchEntry.COLUMN_WATCH_PRICE, price);
+
         if (!TextUtils.isEmpty(watchQuantity)) {
-            values.put(WatchEntry.COLUMN_WATCH_QUANTITY, watchQuantity);
+            quantity = Integer.parseInt(watchQuantity);
         }
+        values.put(WatchEntry.COLUMN_WATCH_QUANTITY, quantity);
+
         if (!TextUtils.isEmpty(supplierName)) {
             values.put(WatchEntry.COLUMN_SUPPLIER_NAME, supplierName);
         }
+
         if (!TextUtils.isEmpty(supplierEmail)) {
             values.put(WatchEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
         }
 
         if (mWatchUri == null) {
             // If URI == null, saving a new Watch
+
             // Insert Watch into db
             Uri uri = getContentResolver().insert(WatchEntry.CONTENT_URI, values);
 
-            // Returns URI of the newly inserted row, or null if an error occurred
             if (uri == null) {
                 // If the new content URI is null, then there was an error with insertion.
                 Toast.makeText(this, R.string.toast_insert_watch_failed, Toast.LENGTH_SHORT).show();
@@ -216,7 +233,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
             int rowUpdated = getContentResolver().update(mWatchUri, values, null, null);
 
             if (rowUpdated == 0) {
-                // If not Watch update, then an error occurred
+                // If no Watch was updated, then an error occurred
                 Toast.makeText(this, R.string.toast_update_watch_failed, Toast.LENGTH_SHORT).show();
             } else {
                 // Else Watch update successful
