@@ -39,7 +39,7 @@ public class WatchProvider extends ContentProvider {
         sUriMatcher.addURI(WatchContract.CONTENT_AUTHORITY, WatchContract.PATH_WATCHES, WATCHES);
 
         // This URI is used to access to a single row of the watches table
-        sUriMatcher.addURI(WatchContract.CONTENT_AUTHORITY, WatchContract.PATH_WATCHES + "/#`", WATCH_ID);
+        sUriMatcher.addURI(WatchContract.CONTENT_AUTHORITY, WatchContract.PATH_WATCHES + "/#", WATCH_ID);
     }
 
     /**
@@ -61,7 +61,7 @@ public class WatchProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
         // The cursor to be returned
         Cursor cursor;
@@ -73,7 +73,7 @@ public class WatchProvider extends ContentProvider {
                         null, null, sortOrder);
                 break;
             case WATCH_ID:
-                selection = "=?";
+                selection = WatchEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
                 cursor = database.query(WatchEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
@@ -187,7 +187,7 @@ public class WatchProvider extends ContentProvider {
                 break;
             // Delete a specific entry in the watches table
             case WATCH_ID:
-                selection = "=?";
+                selection = WatchEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
                 rowsDeleted = database.delete(WatchEntry.TABLE_NAME, selection, selectionArgs);
                 break;
@@ -215,7 +215,7 @@ public class WatchProvider extends ContentProvider {
                 return updateWatch(uri, contentValues, selection, selectionArgs);
             // Update a specific entry in the watches table
             case WATCH_ID:
-                selection = "=?";
+                selection = WatchEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
                 return updateWatch(uri, contentValues, selection, selectionArgs);
             default:

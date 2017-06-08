@@ -28,7 +28,7 @@ public class WatchCatalogActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     // Unique URI loader ID
-    private static final int URI_LOADER = 0;
+    private static final int URI_LOADER = 1;
 
     // Global variables
     private WatchDbHelper mDbHelper;
@@ -112,18 +112,19 @@ public class WatchCatalogActivity extends AppCompatActivity implements
     /*
     * Override methods for LoaderManger.LoaderCallbacks<Cursor>
     * */
+    /* Called when the system needs a new loader to be created */
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         String[] projection = {
                 WatchEntry._ID,
                 WatchEntry.COLUMN_WATCH_MODEL,
                 WatchEntry.COLUMN_WATCH_PRICE,
-                WatchEntry.COLUMN_WATCH_QUANTITY
-        };
+                WatchEntry.COLUMN_WATCH_QUANTITY};
 
         return new CursorLoader(this, WatchEntry.CONTENT_URI, projection, null, null, null);
     }
 
+    /* Called when a loader has finished loading data */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // Swap the new cursor in.  (The framework will take care of closing the
@@ -131,6 +132,8 @@ public class WatchCatalogActivity extends AppCompatActivity implements
         mCursorAdapter.swapCursor(cursor);
     }
 
+    /* Called when a previously created loader is being reset (when you call destroyLoader(int)
+    or when the activity or fragment is destroyed, and thus making its data unavailable. */
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // This is called when the last Cursor provided to onLoadFinished()

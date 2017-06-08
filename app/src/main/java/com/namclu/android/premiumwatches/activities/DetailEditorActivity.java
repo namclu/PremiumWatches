@@ -1,7 +1,10 @@
 package com.namclu.android.premiumwatches.activities;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,13 +20,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.namclu.android.premiumwatches.R;
+import com.namclu.android.premiumwatches.adapters.WatchCursorAdapter;
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
-import com.namclu.android.premiumwatches.data.WatchDbHelper;
 
 /**
  * Allows user to create a new watch or edit an existing one.
  */
-public class DetailEditorActivity extends AppCompatActivity {
+public class DetailEditorActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int URI_LOADER = 0;
 
     // Global variables
     private EditText mModelField;
@@ -33,6 +39,9 @@ public class DetailEditorActivity extends AppCompatActivity {
     private EditText mEmailField;
     private ImageView mImageView;
 
+    private WatchCursorAdapter mCursorAdapter;
+    private Uri mWatchUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,12 +50,12 @@ public class DetailEditorActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Use getIntent() and getData() to get associated URI
-        Uri watchUri = getIntent().getData();
+        mWatchUri = getIntent().getData();
 
         // Set title of activity depending on how user accessed from catalog activity
         // If user clicks a ListView item, set title to "Edit Watch"
-        // else if user clicks "+", set title to "Add a Watch"
-        if (watchUri == null) {
+        // else if user clicks "+" FAB, set title to "Add a Watch"
+        if (mWatchUri == null) {
             // "Add a Watch"
             setTitle("Add a Watch");
         } else {
@@ -70,6 +79,11 @@ public class DetailEditorActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Prepare the loader.  Either re-connect with an existing one, or start a new one.
+        getLoaderManager().initLoader(URI_LOADER, null, this);
+
+        mCursorAdapter = new WatchCursorAdapter(this, null, 0);
     }
 
     @Override
@@ -98,12 +112,67 @@ public class DetailEditorActivity extends AppCompatActivity {
     }
 
     /*
+    * Override methods for LoaderManger.LoaderCallbacks<Cursor>
+    * */
+    /* Called when the system needs a new loader to be created */
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        // Check that mWatchUri is not null
+        if (mWatchUri == null) {
+            return null;
+        }
+
+        String[] projection = {
+                WatchEntry._ID,
+                WatchEntry.COLUMN_WATCH_MODEL,
+                WatchEntry.COLUMN_WATCH_PRICE,
+                WatchEntry.COLUMN_WATCH_QUANTITY,
+                WatchEntry.COLUMN_SUPPLIER_NAME,
+                WatchEntry.COLUMN_SUPPLIER_EMAIL};
+
+        return new CursorLoader(this, mWatchUri, projection, null, null, null);
+    }
+
+    /* Called when a loader has finished loading data */
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // Exit early if the cursor is null or there is less than 1 row in the cursor
+        if (cursor == null || cursor.getCount() < 1) {
+            return;
+        }
+
+        if (cursor.moveToFirst()) {
+            // Get String using Cursor
+            String watchModel = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_MODEL));
+            String watchPrice = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_PRICE));
+            String watchQuantity = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_QUANTITY));
+            String supplierName = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_SUPPLIER_NAME));
+            String supplierEmail = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_SUPPLIER_EMAIL));
+
+            // Set text
+            mModelField.setText(watchModel);
+            mPriceField.setText(watchPrice);
+            mQuantityField.setText(watchQuantity);
+            mSupplierField.setText(supplierName);
+            mEmailField.setText(supplierEmail);
+        }
+    }
+
+    /* Called when a previously created loader is being reset (when you call destroyLoader(int)
+    or when the activity or fragment is destroyed, and thus making its data unavailable. */
+    @Override
+    public void onLoaderReset(Loader loader) {
+        mModelField.setText("");
+        mPriceField.setText("");
+        mQuantityField.setText("");
+        mSupplierField.setText("");
+        mEmailField.setText("");
+    }
+
+    /*
     * Get user input of Watch from detail editor and saves new Watch into database
     * */
     private void saveWatch() {
-        WatchDbHelper dbHelper = new WatchDbHelper(this);
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
         // Get String values from details editor field
         String watchModel = mModelField.getText().toString().trim();
         String watchPrice = mPriceField.getText().toString().trim();
