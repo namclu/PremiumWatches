@@ -4,6 +4,7 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -141,6 +142,9 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 finish();
                 return true;
             case R.id.action_order_product:
+                String[] arrayEmailTo = new String[] {mEmailField.getText().toString().trim()};
+                String subject = getResources().getString(R.string.email_subject_order_summary);
+                createOrderEmail(arrayEmailTo, subject, createOrderSummary());
                 return true;
             case R.id.action_delete_product:
                 showDeleteConfirmationDialog();
@@ -364,5 +368,44 @@ public class DetailEditorActivity extends AppCompatActivity implements
         });
         // Create and show the AlertDialog
         builder.create().show();
+    }
+
+    /*
+    * Create email to order more products
+    * */
+    private void createOrderEmail(String[] arrayEmailTo, String subject, String orderSummary) {
+        // ACTION_SENDTO = compose an email w no attachments
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        //Only email apps should handle this
+        intent.setData(Uri.parse("mailto:"));
+        // String array of "To" recipients
+        intent.putExtra(Intent.EXTRA_EMAIL, arrayEmailTo);
+        // String w the email subject
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        // String w the email body
+        intent.putExtra(Intent.EXTRA_TEXT, orderSummary);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    /*
+    * Create order summary
+    * */
+    private String createOrderSummary(){
+        String supplierName = mSupplierField.getText().toString().trim();
+        String watchModel = mModelField.getText().toString().trim();
+        String watchPrice = mPriceField.getText().toString().trim();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("%s: %s", getResources().getString(R.string.category_supplier), supplierName));
+        sb.append("\n");
+        sb.append(String.format("%s: %s", getResources().getString(R.string.category_model), watchModel));
+        sb.append("\n");
+        sb.append(String.format("%s: %s", getResources().getString(R.string.category_price), watchPrice));
+
+        return sb.toString();
     }
 }
