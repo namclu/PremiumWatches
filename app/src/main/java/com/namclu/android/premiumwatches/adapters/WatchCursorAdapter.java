@@ -72,8 +72,8 @@ public class WatchCursorAdapter extends CursorAdapter {
 
         // Set data to view
         textWatchModel.setText(watchModel);
-        textWatchQuantity.setText(watchQuantity);
-        textWatchPrice.setText(watchPrice);
+        textWatchQuantity.setText("stock: "+ watchQuantity);
+        textWatchPrice.setText("$" + watchPrice);
 
 
 

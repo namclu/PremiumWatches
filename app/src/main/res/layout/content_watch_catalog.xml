@@ -8,12 +8,27 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.namclu.android.premiumwatches.activities.WatchCatalogActivity"
     tools:showIn="@layout/activity_watch_catalog">
-    
-    <ListView
-        android:id="@+id/list_watch_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-    </ListView>
+    <!-- ListView for  -->
+    <ListView
+        android:id="@+id/list_catalog_watch_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- Empty view for list -->
+    <RelativeLayout
+        android:id="@+id/view_catalog_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/text_catalog_empty_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:text="@string/empty_view_text_title"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

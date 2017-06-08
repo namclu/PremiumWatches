@@ -44,6 +44,13 @@ public class WatchCatalogActivity extends AppCompatActivity {
         // Initialise variables
         mDbHelper = new WatchDbHelper(this);
 
+        // Find the ListView which will be populated with data
+        ListView listView = (ListView) findViewById(R.id.list_catalog_watch_item);
+
+        // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
+        View emptyListView = findViewById(R.id.view_catalog_empty_view);
+        listView.setEmptyView(emptyListView);
+
         // Display db
         displayDatabaseInfo();
     }
@@ -117,10 +124,11 @@ public class WatchCatalogActivity extends AppCompatActivity {
                 null,                   // Selection args
                 null);                  // Sort order
 
-        // Find the ListView and CursorAdapter
-        ListView listView = (ListView) findViewById(R.id.list_watch_item);
+        // Find the ListView and  create a CursorAdapter
+        ListView listView = (ListView) findViewById(R.id.list_catalog_watch_item);
         WatchCursorAdapter cursorAdapter = new WatchCursorAdapter(this, cursor, 0);
 
+        // Set CursorAdapter to ListView
         listView.setAdapter(cursorAdapter);
     }
 }

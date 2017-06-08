@@ -1,6 +1,8 @@
 <resources>
     <!-- WatchCatalogActivity -->
-    <string name="app_name">PremiumWatches</string>
+    <string name="app_name">Premium Watches</string>
+    <string name="empty_view_text_title">No watches in inventory</string>
+
 
     <!-- WatchCatalogActivity menu options -->
     <string name="action_settings">Settings</string>
@@ -9,7 +11,7 @@
     <string name="action_delete_product">Delete Product</string>
 
     <!-- DetailEditorActivity -->
-    <string name="title_activity_detail_editor">DetailEditorActivity</string>
+    <string name="title_activity_detail_editor">Detail Editor</string>
 
     <!-- DetailEditorActivity menu options-->
     <string name="action_save">Save</string>

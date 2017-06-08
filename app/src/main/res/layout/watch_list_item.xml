@@ -21,6 +21,8 @@
             android:layout_height="0dp"
             android:layout_weight=".5"
             android:textAlignment="center"
+            android:layout_margin="@dimen/min_margin"
+            android:textAppearance="?android:textAppearanceMedium"
             tools:text="Model #"/>
 
         <TextView
@@ -29,6 +31,7 @@
             android:layout_height="0dp"
             android:layout_weight=".5"
             android:textAlignment="center"
+            android:layout_margin="@dimen/min_margin"
             tools:text="100"/>
     </LinearLayout>
 
@@ -39,20 +42,28 @@
         android:layout_weight=".3"
         android:orientation="vertical">
 
+        <!-- Empty TextView -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".2"/>
+
         <!-- TextView for price -->
         <TextView
             android:id="@+id/text_item_watch_price"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".5"
+            android:layout_weight=".6"
             android:textAlignment="center"
+            android:layout_margin="@dimen/activity_margin"
+            android:textAppearance="?android:textAppearanceLarge"
             tools:text="$1000"/>
 
         <!-- Empty TextView -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".5"/>
+            android:layout_weight=".2"/>
     </LinearLayout>
 
     <!-- Container for button -->
