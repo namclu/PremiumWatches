@@ -75,9 +75,13 @@ public class DetailEditorActivity extends AppCompatActivity implements
         // If user clicks a ListView item, set title to "Edit Watch"
         // else if user clicks "+" FAB, set title to "Add a Watch"
         if (mWatchUri == null) {
-            // "Add a Watch"
+            // Set title to "Add a Watch"
             setTitle(getString(R.string.editor_title_add_watch));
+
+            // Invalidate the options menu, so the "Delete" menu option can be hidden
+            invalidateOptionsMenu();
         } else {
+            // Set title to "Edit watch"
             setTitle(getString(R.string.editor_title_edit_watch));
         }
 
@@ -114,6 +118,14 @@ public class DetailEditorActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mWatchUri == null) {
+            menu.findItem(R.id.action_delete_product).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_detail_editor, menu);
         return true;
@@ -132,6 +144,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
             case R.id.action_order_product:
                 return true;
             case R.id.action_delete_product:
+                showDeleteConfirmationDialog();
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
@@ -289,6 +302,21 @@ public class DetailEditorActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Perform the deletion of the watch in the database.
+     */
+    private void deleteWatch() {
+        int rowDeleted = getContentResolver().delete(mWatchUri, null, null);
+
+        if (rowDeleted == 0) {
+            Toast.makeText(this, R.string.toast_delete_watch_failed, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.toast_delete_watch_successful, Toast.LENGTH_SHORT).show();
+        }
+        // Close the activity
+        finish();
+    }
+
     /*
      * If editing, dialog appears to allow user to "Keep Editing" or "Discard" changes
      * if user clicks on either the Up or Back button
@@ -312,5 +340,30 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 });
         // Create and show the AlertDialog
         alertBuilder.create().show();
+    }
+
+    /*
+    * If user clicks on "delete", dialog appears to allow user to "Delete" or "Cancel"
+    * */
+    private void showDeleteConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.alert_delete_dialog).
+        setPositiveButton(R.string.alert_button_delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button
+                deleteWatch();
+            }
+        }).
+        setNegativeButton(R.string.alert_button_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing
+                if (dialogInterface != null) {
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        // Create and show the AlertDialog
+        builder.create().show();
     }
 }
