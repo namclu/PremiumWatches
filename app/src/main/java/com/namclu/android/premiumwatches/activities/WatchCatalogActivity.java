@@ -11,10 +11,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.namclu.android.premiumwatches.R;
+import com.namclu.android.premiumwatches.adapters.WatchCursorAdapter;
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
 import com.namclu.android.premiumwatches.data.WatchDbHelper;
 
@@ -22,6 +23,7 @@ public class WatchCatalogActivity extends AppCompatActivity {
 
     // Global variables
     private WatchDbHelper mDbHelper;
+    private WatchCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,43 +117,10 @@ public class WatchCatalogActivity extends AppCompatActivity {
                 null,                   // Selection args
                 null);                  // Sort order
 
-        try {
-            // Display the number of rows in the Cursor (which reflects the number of rows in the
-            // watches table in the database).
-            TextView displayView = (TextView) findViewById(R.id.text_watch_list);
-            displayView.setText("Number of rows in watches database table: " + cursor.getCount());
+        // Find the ListView and CursorAdapter
+        ListView listView = (ListView) findViewById(R.id.list_watch_item);
+        WatchCursorAdapter cursorAdapter = new WatchCursorAdapter(this, cursor, 0);
 
-            displayView.setText("The watches table contains " + cursor.getCount() + " watches.\n\n");
-
-            // Add heading info to TextView
-            displayView.append(WatchEntry._ID + " - " +
-                    WatchEntry.COLUMN_WATCH_MODEL + " - " +
-                    WatchEntry.COLUMN_WATCH_PRICE + " - " +
-                    WatchEntry.COLUMN_WATCH_QUANTITY + " - " +
-                    WatchEntry.COLUMN_SUPPLIER_NAME + " - " +
-                    WatchEntry.COLUMN_SUPPLIER_EMAIL + "\n\n");
-
-            // Get the index of each column
-            int idColumnIndex = cursor.getColumnIndex(WatchEntry._ID);
-            int modelColumnIndex = cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_MODEL);
-            int priceColumnIndex = cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_QUANTITY);
-            int supplierNameColumnIndex = cursor.getColumnIndex(WatchEntry.COLUMN_SUPPLIER_NAME);
-            int supplierEmailColumnIndex = cursor.getColumnIndex(WatchEntry.COLUMN_SUPPLIER_EMAIL);
-
-            // Loop through the db and get values from each column heading
-            while (cursor.moveToNext()) {
-                displayView.append(cursor.getInt(idColumnIndex) + " - " +
-                        cursor.getString(modelColumnIndex) + " - " +
-                        cursor.getString(priceColumnIndex) + " - " +
-                        cursor.getString(quantityColumnIndex) + " - " +
-                        cursor.getString(supplierNameColumnIndex) + " - " +
-                        cursor.getString(supplierEmailColumnIndex) + "\n");
-            }
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-            cursor.close();
-        }
+        listView.setAdapter(cursorAdapter);
     }
 }

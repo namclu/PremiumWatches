@@ -2,44 +2,51 @@
 
 <!-- Layout for a single list item in the list of watches -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="100dp"
+              android:orientation="horizontal"
               android:padding="@dimen/min_margin">
 
     <!-- Layout container for product name and quantity -->
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight=".3">
+        android:layout_weight=".3"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/text_item_watch_model"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".5"/>
+            android:layout_weight=".5"
+            android:textAlignment="center"
+            tools:text="Model #"/>
 
         <TextView
             android:id="@+id/text_item_watch_quantity"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".5"/>
+            android:layout_weight=".5"
+            android:textAlignment="center"
+            tools:text="100"/>
     </LinearLayout>
 
     <!-- Container for price -->
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight=".3">
+        android:layout_weight=".3"
+        android:orientation="vertical">
 
         <!-- TextView for price -->
         <TextView
             android:id="@+id/text_item_watch_price"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".5"/>
+            android:layout_weight=".5"
+            android:textAlignment="center"
+            tools:text="$1000"/>
 
         <!-- Empty TextView -->
         <TextView
