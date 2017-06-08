@@ -75,8 +75,6 @@ public class WatchCursorAdapter extends CursorAdapter {
         textWatchQuantity.setText("stock: "+ watchQuantity);
         textWatchPrice.setText("$" + watchPrice);
 
-
-
         // Order button
         buttonOrder.setOnClickListener(new View.OnClickListener() {
             @Override

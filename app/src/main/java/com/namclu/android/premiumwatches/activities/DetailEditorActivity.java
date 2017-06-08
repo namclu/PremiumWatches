@@ -3,17 +3,21 @@ package com.namclu.android.premiumwatches.activities;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,6 +45,21 @@ public class DetailEditorActivity extends AppCompatActivity implements
 
     private WatchCursorAdapter mCursorAdapter;
     private Uri mWatchUri;
+
+    // Boolean to track whether Watch has been edited (true) or not (false)
+    private boolean mWatchHasChanged = false;
+
+    /*
+    * OnTouchListener that listens for any user touches on a View, implying that they are modifying
+    * the view.
+    * */
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            mWatchHasChanged = true;
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +103,14 @@ public class DetailEditorActivity extends AppCompatActivity implements
         getLoaderManager().initLoader(URI_LOADER, null, this);
 
         mCursorAdapter = new WatchCursorAdapter(this, null, 0);
+
+        // Setup OnTouchListeners on all the input fields to determine if user has touched
+        // or modified them
+        mModelField.setOnTouchListener(mTouchListener);
+        mPriceField.setOnTouchListener(mTouchListener);
+        mQuantityField.setOnTouchListener(mTouchListener);
+        mSupplierField.setOnTouchListener(mTouchListener);
+        mEmailField.setOnTouchListener(mTouchListener);
     }
 
     @Override
@@ -106,14 +133,34 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 return true;
             case R.id.action_delete_product:
                 return true;
+            // Respond to a click on the "Up" arrow button in the app bar
+            case android.R.id.home:
+                if (!mWatchHasChanged) {
+                    // Navigate back to parent activity (WatchCatalogActivity)
+                    NavUtils.navigateUpFromSameTask(this);
+                    return true;
+                }
+                showUnsavedChangesDialog();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!mWatchHasChanged) {
+            // If data hasn't changed, continue with handling back button press
+            super.onBackPressed();
+        } else {
+            // Else show dialog to warn the user that there are unsaved changes
+            showUnsavedChangesDialog();
+        }
+    }
+
     /*
-    * Override methods for LoaderManger.LoaderCallbacks<Cursor>
-    * */
+     * Override methods for LoaderManger.LoaderCallbacks<Cursor>
+     * */
     /* Called when the system needs a new loader to be created */
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -239,7 +286,31 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 // Else Watch update successful
                 Toast.makeText(this, R.string.toast_update_watch_successful, Toast.LENGTH_SHORT).show();
             }
-
         }
+    }
+
+    /*
+     * If editing, dialog appears to allow user to "Keep Editing" or "Discard" changes
+     * if user clicks on either the Up or Back button
+     * */
+    private void showUnsavedChangesDialog() {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setMessage(R.string.alert_unsaved_changes_dialog).
+                setPositiveButton(R.string.alert_button_discard, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                }).
+                setNegativeButton(R.string.alert__button_keep_editing, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (dialogInterface != null) {
+                            dialogInterface.dismiss();
+                        }
+                    }
+                });
+        // Create and show the AlertDialog
+        alertBuilder.create().show();
     }
 }

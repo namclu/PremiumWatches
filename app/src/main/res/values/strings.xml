@@ -25,5 +25,10 @@
     <string name="toast_insert_watch_not_saved">Watch not saved</string>
     <string name="toast_update_watch_successful">Watch updated</string>
     <string name="toast_update_watch_failed">Error with updating watch</string>
+    
+    <!-- Strings for alert dialog -->
+    <string name="alert_unsaved_changes_dialog">Discard changes and quit editing?</string>
+    <string name="alert_button_discard">Discard</string>
+    <string name="alert__button_keep_editing">Keep editing</string>
 
 </resources>
