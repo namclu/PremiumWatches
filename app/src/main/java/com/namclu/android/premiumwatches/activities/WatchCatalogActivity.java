@@ -32,8 +32,6 @@ public class WatchCatalogActivity extends AppCompatActivity implements
     // Unique URI loader ID
     private static final int URI_LOADER = 1;
 
-    // Global variables
-    private WatchDbHelper mDbHelper;
     private WatchCursorAdapter mCursorAdapter;
 
     @Override
@@ -53,7 +51,7 @@ public class WatchCatalogActivity extends AppCompatActivity implements
         });
 
         // Initialise variables
-        mDbHelper = new WatchDbHelper(this);
+        WatchDbHelper dbHelper = new WatchDbHelper(this);
 
         // Find the Views which will be populated with data
         ListView listView = (ListView) findViewById(R.id.list_catalog_watch_item);
@@ -68,7 +66,7 @@ public class WatchCatalogActivity extends AppCompatActivity implements
 
         // Initialise CursorAdapter
         // Pass null for the cursor, then update it in onLoadFinished()
-        mCursorAdapter = new WatchCursorAdapter(this, null, 0);
+        mCursorAdapter = new WatchCursorAdapter(this);
 
         // Set CursorAdapter to ListView
         listView.setAdapter(mCursorAdapter);

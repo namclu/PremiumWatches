@@ -25,12 +25,11 @@ public class WatchCursorAdapter extends CursorAdapter {
 
     /**
      * Constructs a new {@link WatchCursorAdapter}.
-     *
      * @param context   The context
-     * @param cursor    The cursor from which to get the data.
+     *
      */
-    public WatchCursorAdapter(Context context, Cursor cursor, int flags) {
-        super(context, cursor, 0);
+    public WatchCursorAdapter(Context context) {
+        super(context, null, 0);
     }
 
     /**
@@ -72,8 +71,10 @@ public class WatchCursorAdapter extends CursorAdapter {
 
         // Set data to view
         textWatchModel.setText(watchModel);
-        textWatchQuantity.setText("stock: "+ watchQuantity);
-        textWatchPrice.setText("$" + watchPrice);
+        textWatchQuantity.setText(String.format("%s: %s",
+                context.getResources().getText(R.string.stock), watchQuantity));
+        textWatchPrice.setText(String.format("%s%s",
+                context.getResources().getText(R.string.dollar_sign), watchPrice));
 
         // Order button
         buttonOrder.setOnClickListener(new View.OnClickListener() {

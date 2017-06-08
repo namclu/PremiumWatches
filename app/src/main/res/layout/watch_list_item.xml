@@ -6,7 +6,8 @@
               android:layout_width="match_parent"
               android:layout_height="100dp"
               android:orientation="horizontal"
-              android:padding="@dimen/min_margin">
+              android:padding="@dimen/min_margin"
+              android:baselineAligned="false">
 
     <!-- Layout container for product name and quantity -->
     <LinearLayout
@@ -81,7 +82,7 @@
             android:layout_gravity="center"
             android:layout_margin="@dimen/fab_margin"
             android:focusable="false"
-            android:text="Order"/>
+            android:text="@string/button_order"/>
     </LinearLayout>
 
 </LinearLayout>

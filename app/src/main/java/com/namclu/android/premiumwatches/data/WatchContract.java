@@ -16,7 +16,7 @@ public final class WatchContract {
     // Unique for each content provider. Usually the app package name
     public static final String CONTENT_AUTHORITY = "com.namclu.android.premiumwatches";
     // Includes the scheme ("content://") + content authority
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     // Possible path (appended to base content URI for possible URI's)
     public static final String PATH_WATCHES = "watches";
 

@@ -22,7 +22,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".4"
-            android:text="Model"
+            android:text="@string/category_model"
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <EditText
@@ -47,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".4"
-            android:text="Price"
+            android:text="@string/category_price"
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <EditText
@@ -71,7 +71,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".4"
-            android:text="Quantity"
+            android:text="@string/category_quantity"
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <EditText
@@ -95,7 +95,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".4"
-            android:text="Supplier"
+            android:text="@string/category_supplier"
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <EditText
@@ -120,7 +120,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".4"
-            android:text="Email"
+            android:text="@string/category_email"
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <EditText

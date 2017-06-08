@@ -43,7 +43,6 @@ public class DetailEditorActivity extends AppCompatActivity implements
     private EditText mEmailField;
     private ImageView mImageView;
 
-    private WatchCursorAdapter mCursorAdapter;
     private Uri mWatchUri;
 
     // Boolean to track whether Watch has been edited (true) or not (false)
@@ -53,7 +52,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
     * OnTouchListener that listens for any user touches on a View, implying that they are modifying
     * the view.
     * */
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+    private final View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mWatchHasChanged = true;
@@ -106,7 +105,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
         // Prepare the loader.  Either re-connect with an existing one, or start a new one.
         getLoaderManager().initLoader(URI_LOADER, null, this);
 
-        mCursorAdapter = new WatchCursorAdapter(this, null, 0);
+        WatchCursorAdapter cursorAdapter = new WatchCursorAdapter(this);
 
         // Setup OnTouchListeners on all the input fields to determine if user has touched
         // or modified them

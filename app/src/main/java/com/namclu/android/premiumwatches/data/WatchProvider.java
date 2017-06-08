@@ -223,8 +223,8 @@ public class WatchProvider extends ContentProvider {
         }
     }
 
-    public int updateWatch(@NonNull Uri uri, @Nullable ContentValues contentValues,
-                           @Nullable String selection, @Nullable String[] selectionArgs) {
+    private int updateWatch(@NonNull Uri uri, @Nullable ContentValues contentValues,
+                            @Nullable String selection, @Nullable String[] selectionArgs) {
         /* Check values before updating */
         // If contentValues is empty, return 0
         if (contentValues.size() == 0) {
