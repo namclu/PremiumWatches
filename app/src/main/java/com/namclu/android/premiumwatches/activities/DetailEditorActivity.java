@@ -1,5 +1,6 @@
 package com.namclu.android.premiumwatches.activities;
 
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -7,8 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
@@ -29,13 +33,22 @@ import com.namclu.android.premiumwatches.R;
 import com.namclu.android.premiumwatches.adapters.WatchCursorAdapter;
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import static android.graphics.Bitmap.CompressFormat.PNG;
+
 /**
  * Allows user to create a new Watch or edit an existing one.
  */
 public class DetailEditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    // Unique URI loader ID
     private static final int URI_LOADER = 0;
+    // Unique image request code
+    public static final int GET_FROM_GALLERY = 3;
 
     // Global variables
     private EditText mModelField;
@@ -186,6 +199,12 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 String subject = getResources().getString(R.string.email_subject_order_summary);
                 createOrderEmail(arrayEmailTo, subject, createOrderSummary());
                 return true;
+            case R.id.action_upload_image:
+                Intent imageIntent = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(imageIntent, GET_FROM_GALLERY);
+                return true;
             case R.id.action_delete_product:
                 showDeleteConfirmationDialog();
                 return true;
@@ -214,6 +233,30 @@ public class DetailEditorActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Detects request codes
+        if(requestCode==GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
+            Uri selectedImage = data.getData();
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                ContentValues imageValue = new ContentValues();
+                // getBytes() used to convert bitmap into byte array, which SQLite can accept
+                imageValue.put(WatchEntry.COLUMN_WATCH_IMAGE, getBytes(bitmap));
+                mImageView.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
     /*
      * Override methods for LoaderManger.LoaderCallbacks<Cursor>
      * */
@@ -231,7 +274,8 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 WatchEntry.COLUMN_WATCH_PRICE,
                 WatchEntry.COLUMN_WATCH_QUANTITY,
                 WatchEntry.COLUMN_SUPPLIER_NAME,
-                WatchEntry.COLUMN_SUPPLIER_EMAIL};
+                WatchEntry.COLUMN_SUPPLIER_EMAIL,
+                WatchEntry.COLUMN_WATCH_IMAGE};
 
         return new CursorLoader(this, mWatchUri, projection, null, null, null);
     }
@@ -252,12 +296,19 @@ public class DetailEditorActivity extends AppCompatActivity implements
             String supplierName = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_SUPPLIER_NAME));
             String supplierEmail = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_SUPPLIER_EMAIL));
 
-            // Set text
+            // Set text and image
             mModelField.setText(watchModel);
             mPriceField.setText(watchPrice);
             mQuantityField.setText(watchQuantity);
             mSupplierField.setText(supplierName);
             mEmailField.setText(supplierEmail);
+            if (mImageView.getDrawable() != null) {
+                Bitmap bitmap = getImage(
+                        cursor.getBlob(cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_IMAGE)));
+                mImageView.setImageBitmap(bitmap);
+            } else {
+                mImageView.setImageBitmap(null);
+            }
         }
     }
 
@@ -286,7 +337,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
         String watchQuantity = mQuantityField.getText().toString().trim();
         String supplierName = mSupplierField.getText().toString().trim();
         String supplierEmail = mEmailField.getText().toString().trim();
-
+        Bitmap imageView = mImageView.getDrawingCache();
 
         // If all fields are empty, then exit activity w/o saving
         if (TextUtils.isEmpty(watchModel) &&
@@ -316,6 +367,10 @@ public class DetailEditorActivity extends AppCompatActivity implements
 
         if (!TextUtils.isEmpty(supplierEmail)) {
             values.put(WatchEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
+        }
+
+        if (imageView != null) {
+            values.put(WatchEntry.COLUMN_WATCH_IMAGE, getBytes(mImageView.getDrawingCache()));
         }
 
         if (mWatchUri == null) {
@@ -447,5 +502,18 @@ public class DetailEditorActivity extends AppCompatActivity implements
         sb.append(String.format("%s: %s", getResources().getString(R.string.category_price), watchPrice));
 
         return sb.toString();
+    }
+
+    /* Image helper methods */
+    // Convert from bitmap to byte array before inserting image into db
+    private byte[] getBytes(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(PNG, 0, stream);
+        return stream.toByteArray();
+    }
+
+    // Convert from byte array to bitmap when retrieving image from db
+    private Bitmap getImage(byte[] image) {
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 }

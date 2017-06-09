@@ -12,6 +12,11 @@
         android:title="@string/action_order_product"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_upload_image"
+        android:orderInCategory="100"
+        android:title="@string/action_upload_image"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_delete_product"
         android:orderInCategory="100"
         android:title="@string/action_delete_product"
