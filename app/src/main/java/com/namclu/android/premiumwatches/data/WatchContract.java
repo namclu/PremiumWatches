@@ -55,8 +55,8 @@ public final class WatchContract {
         // Quantity available, Type: INTEGER
         public static final String COLUMN_WATCH_QUANTITY = "quantity";
 
-        // Image of the watch, Type: BLOB
-        public static final String COLUMN_WATCH_IMAGE = "image";
+        // Image of the watch, Type: STRING
+        public static final String COLUMN_STRING_IMAGE_URI = "image";
 
         // Supplier name, Type: TEXT
         public static final String COLUMN_SUPPLIER_NAME = "supplier";

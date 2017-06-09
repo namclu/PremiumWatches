@@ -11,15 +11,15 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -30,14 +30,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.namclu.android.premiumwatches.R;
-import com.namclu.android.premiumwatches.adapters.WatchCursorAdapter;
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import static android.graphics.Bitmap.CompressFormat.PNG;
+import java.io.InputStream;
 
 /**
  * Allows user to create a new Watch or edit an existing one.
@@ -47,8 +44,9 @@ public class DetailEditorActivity extends AppCompatActivity implements
 
     // Unique URI loader ID
     private static final int URI_LOADER = 0;
-    // Unique image request code
-    public static final int GET_FROM_GALLERY = 3;
+    // Pick image request code
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final String TAG = DetailEditorActivity.class.getSimpleName();
 
     // Global variables
     private EditText mModelField;
@@ -61,6 +59,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
     private Button mRestockButton;
 
     private Uri mWatchUri;
+    private Uri mImageUri;
 
     // Boolean to track whether Watch has been edited (true) or not (false)
     private boolean mWatchHasChanged = false;
@@ -115,16 +114,13 @@ public class DetailEditorActivity extends AppCompatActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                openImageSelector();
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Prepare the loader.  Either re-connect with an existing one, or start a new one.
         getLoaderManager().initLoader(URI_LOADER, null, this);
-
-        WatchCursorAdapter cursorAdapter = new WatchCursorAdapter(this);
 
         // Setup OnTouchListeners on all the input fields to determine if user has touched
         // or modified them
@@ -174,6 +170,9 @@ public class DetailEditorActivity extends AppCompatActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (mWatchUri == null) {
             menu.findItem(R.id.action_delete_product).setVisible(false);
+            menu.findItem(R.id.action_order_product).setVisible(false);
+            mSaleButton.setVisibility(View.INVISIBLE);
+            mRestockButton.setVisibility(View.INVISIBLE);
         }
         return true;
     }
@@ -198,12 +197,6 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 String[] arrayEmailTo = new String[] {mEmailField.getText().toString().trim()};
                 String subject = getResources().getString(R.string.email_subject_order_summary);
                 createOrderEmail(arrayEmailTo, subject, createOrderSummary());
-                return true;
-            case R.id.action_upload_image:
-                Intent imageIntent = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                startActivityForResult(imageIntent, GET_FROM_GALLERY);
                 return true;
             case R.id.action_delete_product:
                 showDeleteConfirmationDialog();
@@ -234,27 +227,24 @@ public class DetailEditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        // The ACTION_OPEN_DOCUMENT intent was sent with the request code READ_REQUEST_CODE.
+        // If the request code seen here doesn't match, it's the response to some other intent,
+        // and the below code shouldn't run at all.
 
-        //Detects request codes
-        if(requestCode==GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
-            Uri selectedImage = data.getData();
-            Bitmap bitmap = null;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                ContentValues imageValue = new ContentValues();
-                // getBytes() used to convert bitmap into byte array, which SQLite can accept
-                imageValue.put(WatchEntry.COLUMN_WATCH_IMAGE, getBytes(bitmap));
-                mImageView.setImageBitmap(bitmap);
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            // The document selected by the user won't be returned in the intent.
+            // Instead, a URI to that document will be contained in the return intent
+            // provided to this method as a parameter.  Pull that uri using "resultData.getData()"
+
+            if (resultData != null) {
+                mImageUri = resultData.getData();
+                mImageView.setImageBitmap(getBitmapFromUri(mImageUri));
+                mWatchHasChanged = true;
             }
-        }
+        } /*else if (requestCode == SEND_MAIL_REQUEST && resultCode == Activity.RESULT_OK) {
+
+        }*/
     }
 
     /*
@@ -275,7 +265,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 WatchEntry.COLUMN_WATCH_QUANTITY,
                 WatchEntry.COLUMN_SUPPLIER_NAME,
                 WatchEntry.COLUMN_SUPPLIER_EMAIL,
-                WatchEntry.COLUMN_WATCH_IMAGE};
+                WatchEntry.COLUMN_STRING_IMAGE_URI};
 
         return new CursorLoader(this, mWatchUri, projection, null, null, null);
     }
@@ -295,6 +285,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
             String watchQuantity = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_QUANTITY));
             String supplierName = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_SUPPLIER_NAME));
             String supplierEmail = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_SUPPLIER_EMAIL));
+            String imageLocation = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_STRING_IMAGE_URI));
 
             // Set text and image
             mModelField.setText(watchModel);
@@ -302,12 +293,9 @@ public class DetailEditorActivity extends AppCompatActivity implements
             mQuantityField.setText(watchQuantity);
             mSupplierField.setText(supplierName);
             mEmailField.setText(supplierEmail);
-            if (mImageView.getDrawable() != null) {
-                Bitmap bitmap = getImage(
-                        cursor.getBlob(cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_IMAGE)));
-                mImageView.setImageBitmap(bitmap);
-            } else {
-                mImageView.setImageBitmap(null);
+            if (!TextUtils.isEmpty(imageLocation)) {
+                Uri imageUri = Uri.parse(imageLocation);
+                mImageView.setImageBitmap(getBitmapFromUri(imageUri));
             }
         }
     }
@@ -337,12 +325,12 @@ public class DetailEditorActivity extends AppCompatActivity implements
         String watchQuantity = mQuantityField.getText().toString().trim();
         String supplierName = mSupplierField.getText().toString().trim();
         String supplierEmail = mEmailField.getText().toString().trim();
-        Bitmap imageView = mImageView.getDrawingCache();
 
         // If all fields are empty, then exit activity w/o saving
         if (TextUtils.isEmpty(watchModel) &&
                 TextUtils.isEmpty(watchPrice) && TextUtils.isEmpty(watchQuantity) &&
-                TextUtils.isEmpty(supplierName) && TextUtils.isEmpty(supplierEmail)) {
+                TextUtils.isEmpty(supplierName) && TextUtils.isEmpty(supplierEmail) &&
+                TextUtils.isEmpty(mImageUri.toString())) {
             Toast.makeText(this, R.string.toast_insert_watch_not_saved, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -369,9 +357,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
             values.put(WatchEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
         }
 
-        if (imageView != null) {
-            values.put(WatchEntry.COLUMN_WATCH_IMAGE, getBytes(mImageView.getDrawingCache()));
-        }
+        values.put(WatchEntry.COLUMN_STRING_IMAGE_URI, mImageUri.toString());
 
         if (mWatchUri == null) {
             // If URI == null, saving a new Watch
@@ -504,16 +490,73 @@ public class DetailEditorActivity extends AppCompatActivity implements
         return sb.toString();
     }
 
-    /* Image helper methods */
-    // Convert from bitmap to byte array before inserting image into db
-    private byte[] getBytes(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(PNG, 0, stream);
-        return stream.toByteArray();
+    /*
+    * Open image selector activity
+    * */
+    private void openImageSelector() {
+        Intent intent;
+
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+        }
+
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    // Convert from byte array to bitmap when retrieving image from db
-    private Bitmap getImage(byte[] image) {
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
+    /*
+    * Gets a bitmap from the given URI
+    * */
+    private Bitmap getBitmapFromUri(Uri uri) {
+
+        if (uri == null || uri.toString().isEmpty())
+            return null;
+
+        // Get the dimensions of the View
+        int targetW = mImageView.getWidth();
+        int targetH = mImageView.getHeight();
+
+        InputStream input = null;
+        try {
+            input = this.getContentResolver().openInputStream(uri);
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            //bmOptions.inPurgeable = true;
+
+            input = this.getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+            return bitmap;
+
+        } catch (FileNotFoundException fne) {
+            Log.e(TAG, "Failed to load image.", fne);
+            return null;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to load image.", e);
+            return null;
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ioe) {
+
+            }
+        }
     }
 }

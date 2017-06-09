@@ -33,7 +33,7 @@ public class WatchDbHelper extends SQLiteOpenHelper {
                         WatchEntry.COLUMN_WATCH_MODEL + " TEXT NOT NULL, " +
                         WatchEntry.COLUMN_WATCH_PRICE + " INTEGER DEFAULT 0, " +
                         WatchEntry.COLUMN_WATCH_QUANTITY + " INTEGER DEFAULT 0, " +
-                        WatchEntry.COLUMN_WATCH_IMAGE + " BLOB, " +
+                        WatchEntry.COLUMN_STRING_IMAGE_URI + " STRING, " +
                         WatchEntry.COLUMN_SUPPLIER_NAME + " TEXT NOT NULL, " +
                         WatchEntry.COLUMN_SUPPLIER_EMAIL + " TEXT);";
 

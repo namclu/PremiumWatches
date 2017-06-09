@@ -159,12 +159,14 @@
             android:id="@+id/button_editor_sale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"
             android:text="@string/button_sale"/>
 
         <Button
             android:id="@+id/button_editor_restock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"
             android:text="@string/button_editor_restock"/>
 
     </LinearLayout>
