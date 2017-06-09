@@ -139,13 +139,10 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 // Decrement only if quantity > 0
                 if (currentQuantity > 0) {
                     int decreasedQuantity = currentQuantity - 1;
-                    ContentValues updatedValue = new ContentValues();
-
-                    updatedValue.put(WatchEntry.COLUMN_WATCH_QUANTITY, decreasedQuantity);
-
-                    getContentResolver().update(mWatchUri, updatedValue, null, null);
                     mQuantityField.setText(String.format("%s", decreasedQuantity));
                 }
+                // If user clicks on this button, an edit has been made
+                mWatchHasChanged = true;
             }
         });
 
@@ -156,12 +153,10 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 int currentQuantity = Integer.parseInt(mQuantityField.getText().toString().trim());
 
                 int increasedQuantity = currentQuantity + 1;
-                ContentValues updatedValue = new ContentValues();
-
-                updatedValue.put(WatchEntry.COLUMN_WATCH_QUANTITY, increasedQuantity);
-
-                getContentResolver().update(mWatchUri, updatedValue, null, null);
                 mQuantityField.setText(String.format("%s", increasedQuantity));
+
+                // If user clicks on this button, an edit has been made
+                mWatchHasChanged = true;
             }
         });
     }
