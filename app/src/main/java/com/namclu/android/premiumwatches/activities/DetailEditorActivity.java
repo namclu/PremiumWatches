@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -43,6 +44,8 @@ public class DetailEditorActivity extends AppCompatActivity implements
     private EditText mSupplierField;
     private EditText mEmailField;
     private ImageView mImageView;
+    private Button mSaleButton;
+    private Button mRestockButton;
 
     private Uri mWatchUri;
 
@@ -92,6 +95,8 @@ public class DetailEditorActivity extends AppCompatActivity implements
         mSupplierField = (EditText) findViewById(R.id.edit_editor_field_supplier);
         mEmailField = (EditText) findViewById(R.id.edit_editor_field_email);
         mImageView = (ImageView) findViewById(R.id.image_editor_product_image);
+        mSaleButton = (Button) findViewById(R.id.button_editor_sale);
+        mRestockButton = (Button) findViewById(R.id.button_editor_restock);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -115,6 +120,41 @@ public class DetailEditorActivity extends AppCompatActivity implements
         mQuantityField.setOnTouchListener(mTouchListener);
         mSupplierField.setOnTouchListener(mTouchListener);
         mEmailField.setOnTouchListener(mTouchListener);
+
+        // Setup OnClickListeners for Sale button to decrement stock by 1 upon click
+        mSaleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = Integer.parseInt(mQuantityField.getText().toString().trim());
+
+                // Decrement only if quantity > 0
+                if (currentQuantity > 0) {
+                    int decreasedQuantity = currentQuantity - 1;
+                    ContentValues updatedValue = new ContentValues();
+
+                    updatedValue.put(WatchEntry.COLUMN_WATCH_QUANTITY, decreasedQuantity);
+
+                    getContentResolver().update(mWatchUri, updatedValue, null, null);
+                    mQuantityField.setText(String.format("%s", decreasedQuantity));
+                }
+            }
+        });
+
+        // Setup OnClickListeners for Restock button to increment stock by 1 upon click
+        mRestockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = Integer.parseInt(mQuantityField.getText().toString().trim());
+
+                int increasedQuantity = currentQuantity + 1;
+                ContentValues updatedValue = new ContentValues();
+
+                updatedValue.put(WatchEntry.COLUMN_WATCH_QUANTITY, increasedQuantity);
+
+                getContentResolver().update(mWatchUri, updatedValue, null, null);
+                mQuantityField.setText(String.format("%s", increasedQuantity));
+            }
+        });
     }
 
     @Override

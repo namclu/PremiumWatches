@@ -22,6 +22,7 @@
     <string name="category_supplier">Supplier</string>
     <string name="category_email">Email</string>
     <string name="email_subject_order_summary">Order Summary</string>
+    <string name="button_editor_restock">restock</string>
 
     <!-- DetailEditorActivity menu options-->
     <string name="action_save">Save</string>

@@ -89,11 +89,11 @@ public class WatchCursorAdapter extends CursorAdapter {
             public void onClick(View view) {
                 if (currentQuantity > 0) {
                     int decreasedQuantity = currentQuantity - 1;
-                    ContentValues updateValue = new ContentValues();
+                    ContentValues updatedValue = new ContentValues();
 
-                    updateValue.put(WatchEntry.COLUMN_WATCH_QUANTITY, decreasedQuantity);
+                    updatedValue.put(WatchEntry.COLUMN_WATCH_QUANTITY, decreasedQuantity);
 
-                    context.getContentResolver().update(uriToUpdate, updateValue, null, null);
+                    context.getContentResolver().update(uriToUpdate, updatedValue, null, null);
                     textWatchQuantity.setText(String.format("%s: %s",
                             context.getResources().getText(R.string.stock), decreasedQuantity));
                 }
