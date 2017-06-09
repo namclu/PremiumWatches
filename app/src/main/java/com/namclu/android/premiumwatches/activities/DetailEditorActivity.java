@@ -242,9 +242,7 @@ public class DetailEditorActivity extends AppCompatActivity implements
                 mImageView.setImageBitmap(getBitmapFromUri(mImageUri));
                 mWatchHasChanged = true;
             }
-        } /*else if (requestCode == SEND_MAIL_REQUEST && resultCode == Activity.RESULT_OK) {
-
-        }*/
+        }
     }
 
     /*
@@ -326,11 +324,18 @@ public class DetailEditorActivity extends AppCompatActivity implements
         String supplierName = mSupplierField.getText().toString().trim();
         String supplierEmail = mEmailField.getText().toString().trim();
 
-        // If all fields are empty, then exit activity w/o saving
-        if (TextUtils.isEmpty(watchModel) &&
-                TextUtils.isEmpty(watchPrice) && TextUtils.isEmpty(watchQuantity) &&
-                TextUtils.isEmpty(supplierName) && TextUtils.isEmpty(supplierEmail) &&
-                TextUtils.isEmpty(mImageUri.toString())) {
+        // If all fields are empty or if required fields (Model & Supplier) not provided
+        // then exit activity w/o saving
+        if (TextUtils.isEmpty(watchModel) && TextUtils.isEmpty(supplierName) &&
+                TextUtils.isEmpty(watchPrice) && TextUtils.isEmpty(watchQuantity)
+                 && TextUtils.isEmpty(supplierEmail) &&
+                mImageUri == null) {
+            Toast.makeText(this, R.string.toast_insert_watch_not_saved, Toast.LENGTH_SHORT).show();
+            return;
+        } else if (TextUtils.isEmpty(watchModel) || TextUtils.isEmpty(supplierName) &&
+                TextUtils.isEmpty(watchPrice) && TextUtils.isEmpty(watchQuantity)
+                && TextUtils.isEmpty(supplierEmail) &&
+                mImageUri == null) {
             Toast.makeText(this, R.string.toast_insert_watch_not_saved, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -357,7 +362,9 @@ public class DetailEditorActivity extends AppCompatActivity implements
             values.put(WatchEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
         }
 
-        values.put(WatchEntry.COLUMN_STRING_IMAGE_URI, mImageUri.toString());
+        if (mImageUri != null) {
+            values.put(WatchEntry.COLUMN_STRING_IMAGE_URI, mImageUri.toString());
+        }
 
         if (mWatchUri == null) {
             // If URI == null, saving a new Watch
