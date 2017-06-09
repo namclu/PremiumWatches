@@ -1,14 +1,16 @@
 package com.namclu.android.premiumwatches.adapters;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.namclu.android.premiumwatches.R;
 import com.namclu.android.premiumwatches.data.WatchContract.WatchEntry;
@@ -60,9 +62,9 @@ public class WatchCursorAdapter extends CursorAdapter {
     public void bindView(View view, final Context context, Cursor cursor) {
         // Find the views to inflate
         TextView textWatchModel = (TextView) view.findViewById(R.id.text_item_watch_model);
-        TextView textWatchQuantity = (TextView) view.findViewById(R.id.text_item_watch_quantity);
+        final TextView textWatchQuantity = (TextView) view.findViewById(R.id.text_item_watch_quantity);
         TextView textWatchPrice = (TextView) view.findViewById(R.id.text_item_watch_price);
-        Button buttonOrder = (Button) view.findViewById(R.id.button_list_order);
+        Button buttonSale = (Button) view.findViewById(R.id.button_list_sale);
 
         // Get data from cursor
         String watchModel = cursor.getString(cursor.getColumnIndex(WatchEntry.COLUMN_WATCH_MODEL));
@@ -76,11 +78,25 @@ public class WatchCursorAdapter extends CursorAdapter {
         textWatchPrice.setText(String.format("%s%s",
                 context.getResources().getText(R.string.dollar_sign), watchPrice));
 
-        // Order button
-        buttonOrder.setOnClickListener(new View.OnClickListener() {
+        // Variables needed to decrement product quantity
+        final int rowID = cursor.getInt(cursor.getColumnIndex(WatchEntry._ID));
+        final Uri uriToUpdate = ContentUris.withAppendedId(WatchEntry.CONTENT_URI, rowID);
+        final int currentQuantity = Integer.parseInt(watchQuantity);
+
+        // Sale button decreases product stock by 1 unless
+        buttonSale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "Tapped on view " + view.getId(), Toast.LENGTH_SHORT).show();
+                if (currentQuantity > 0) {
+                    int decreasedQuantity = currentQuantity - 1;
+                    ContentValues updateValue = new ContentValues();
+
+                    updateValue.put(WatchEntry.COLUMN_WATCH_QUANTITY, decreasedQuantity);
+
+                    context.getContentResolver().update(uriToUpdate, updateValue, null, null);
+                    textWatchQuantity.setText(String.format("%s: %s",
+                            context.getResources().getText(R.string.stock), decreasedQuantity));
+                }
             }
         });
     }

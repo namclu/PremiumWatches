@@ -76,13 +76,13 @@
 
         <!-- Button for order button -->
         <Button
-            android:id="@+id/button_list_order"
+            android:id="@+id/button_list_sale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="@dimen/fab_margin"
             android:focusable="false"
-            android:text="@string/button_order"/>
+            android:text="@string/button_sale"/>
     </LinearLayout>
 
 </LinearLayout>

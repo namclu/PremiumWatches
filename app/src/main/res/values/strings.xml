@@ -2,7 +2,7 @@
     <!-- WatchCatalogActivity -->
     <string name="app_name">Premium Watches</string>
     <string name="empty_view_text_title">No watches in inventory</string>
-    <string name="button_order">Order</string>
+    <string name="button_sale">Sale</string>
     <string name="stock">Stock</string>
     <string name="dollar_sign">$</string>
 
