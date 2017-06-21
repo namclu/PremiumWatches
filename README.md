@@ -41,4 +41,4 @@ Directory Name: <Name of the repository>
 
 ## Screenshots
 
-<img src="/screenshots/watch_list_view.png" width="280" height="480"> <img src="/screenshots/watch_details_view.png" width="280" height="480"> <img src="/screenshots/watch_details_menu.png" width="280" height="480">
+<img src="/screenshots/pw_add_new_watch.gif" width="280" height="480"> <img src="/screenshots/pw_add_delete_all.gif" width="280" height="480">
